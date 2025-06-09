@@ -1,5 +1,7 @@
 I am leveraging the [CLaP README](https://github.com/PlusLabNLP/CLaP/tree/main) as this work utilizes that process.
 
+Here is [RAMS Extended Set](https://drive.google.com/file/d/1_ZqiPhup_UE5BeE0n0Vn0yWGCFoVdnm1/view?usp=drive_link): a multilingual expansion of the Roles Across Multiple Sentences ([RAMS](https://nlp.jhu.edu/rams/)) dataset.
+
 ## Setup
 
 We use `Python=3.8` for the setup. You can use the following command to setup the corresponding conda environment
