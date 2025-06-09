@@ -234,6 +234,14 @@ def create_data_and_save_eae(src_data, trans_data, config):
     assert len(src_data) == len(trans_text)
     assert len(trans_entities) == len(src_entities) == len(src_roles)
 
+    ## 
+    # Pre-compute starting index of each doc in the flat entity list
+    offsets = [0]
+    for counts in src_num_entities:
+        offsets.append(offsets[-1] + sum(counts))
+    # offsets[i] is the global start index for document i
+    ##
+
     tgt_data, entity_idx = [], 0
     char_lang = True if config.tgt_lang in ["zh", "chinese", "ja", "japanese"] else False
     num_ems_tgt, num_ems_src = 0, 0
@@ -264,7 +272,12 @@ def create_data_and_save_eae(src_data, trans_data, config):
                 "arguments": []
             }
             
-            assert src_roles[entity_idx] == "Trigger"
+            #assert src_roles[entity_idx] == "Trigger"
+            expected_role = src_roles[entity_idx]
+            if expected_role != "Trigger":
+                print(f"[WARN] Skipping event in doc {dt['doc_id']}: expected 'Trigger', got '{expected_role}' at index {entity_idx}")
+                entity_idx += src_num_entities[i][j]
+                continue
             entity_trans = trans_entities[entity_idx]
             if not char_lang and trans_entities[entity_idx] in trans_text[i]:
                 entity_trans, _ = complete_phrase(trans_text[i], trans_entities[entity_idx])
@@ -275,9 +288,12 @@ def create_data_and_save_eae(src_data, trans_data, config):
                 tgt_em["trigger"]["start"] = t_s
                 tgt_em["trigger"]["end"] = t_e
                 entity_idx += 1
-            elif trans_entities[entity_idx] in trans_text[i]:
-                import ipdb; ipdb.set_trace()
+            #elif trans_entities[entity_idx] in trans_text[i]:
+            #    import ipdb; ipdb.set_trace()
             else:
+                #print(f"[MISSING TRIGGER] doc_id={dt['doc_id']} lang={config.tgt_lang}")
+                #print(f"  Translated Text: {trans_text[i]}")
+                #print(f"  Trigger Span:    '{entity_trans}'")
                 entity_idx += src_num_entities[i][j]
                 continue
             
@@ -314,6 +330,9 @@ def create_data_and_save_eae(src_data, trans_data, config):
 
                     tgt_em["arguments"].append(arg)
                 else:
+                    #print(f"[MISSING ARG] doc_id={dt['doc_id']} lang={config.tgt_lang} event_id={em['id']}")
+                    #print(f"  Translated Text: {trans_text[i]}")
+                    #print(f"  Argument Span:   '{entity_trans}'")
                     args_in_text = 0
                 
                 entity_idx += 1
@@ -332,7 +351,7 @@ def create_data_and_save_eae(src_data, trans_data, config):
         filename = config.tgt_folder + "/trans_%s_%s_ed.txt" % (config.tgt_lang, config.split)
     else:
         filename = config.tgt_folder + "/trans_%s_%s_eae.txt" % (config.tgt_lang, config.split)
-    with open(filename, 'w') as f:
+    with open(filename, 'w', encoding="utf-8") as f:
         for dt in tgt_data:
             f.write(json.dumps(dt, ensure_ascii=False) + "\n")
 

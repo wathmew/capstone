@@ -17,13 +17,13 @@ MMT50_LANG_CONVERT = {
     "hindi": "hi_IN",
     "es": "es_XX",
     "spanish": "es_XX",
-    "de": "de_DE",
+    "de": "de_DE", # german
     "fr": "fr_XX",
     "ru": "ru_RU",
     "nl": "nl_XX",
     "it": "it_IT",
     "ja": "ja_XX",
-    "pt": "pt_XX",
+    "pt": "pt_XX", # portuguese
     "vi": "vi_VN",
     "ko": "ko_KR",
     "id": "id_ID",
@@ -42,7 +42,7 @@ MMT50_LANG_CONVERT = {
     "sw": "sw_KE",
     "ta": "ta_IN",
     "te": "te_IN",
-    "th": "th_TH",
+    "th": "th_TH", # thai
     "tl": "tl_XX",
     "tr": "tr_TR",
     "ur": "ur_PK"
@@ -65,9 +65,13 @@ def load_config(args):
 
 def load_data(config):
     if config.task.lower() == "eae":
-        train_data = load_EAE_data(config.train_file, config)
+        #train_data = load_EAE_data(config.train_file, config)
+        #train_data = load_EAE_data(config.test_file, config)
+        train_data = load_EAE_data(config.dev_file, config)
     elif config.task.lower() == "ner":
-        train_data = load_ner_data(config.train_file, config.src_lang, config.max_input_length)
+        #train_data = load_ner_data(config.train_file, config.src_lang, config.max_input_length)
+        #train_data = load_ner_data(config.test_file, config.src_lang, config.max_input_length)
+        train_data = load_ner_data(config.dev_file, config.src_lang, config.max_input_length)
 
     return train_data
 

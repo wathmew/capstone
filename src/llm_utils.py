@@ -7,12 +7,12 @@ PROMPT = {
     "mixtral": "<s>[INST] \n{system_prompt}\n{user_prompt}\n [/INST]"                       # mistralai/Mixtral-8x7B-Instruct-v0.1
 }
 
-def load_model(model_name_or_path, n_gpu=1, seed=0, gpu_memory_utilization=0.9, dtype="auto"):
+def load_model(model_name_or_path, n_gpu=1, seed=0, gpu_memory_utilization=0.9, dtype="auto", distributed_executor_backend="mp",disable_custom_all_reduce=True):
 
     # Load the FP16 model
     print ("Loading %s in %s..." % (model_name_or_path, dtype))
     start_time = time.time()
-    model = LLM(model=model_name_or_path, dtype=dtype, tensor_parallel_size=n_gpu, seed=seed, gpu_memory_utilization=gpu_memory_utilization)
+    model = LLM(model=model_name_or_path, dtype=dtype, tensor_parallel_size=n_gpu, seed=seed, gpu_memory_utilization=gpu_memory_utilization, distributed_executor_backend=distributed_executor_backend, disable_custom_all_reduce=disable_custom_all_reduce)
     print ("Finish loading in %.2f sec." % (time.time() - start_time))
 
     # Load the tokenizer

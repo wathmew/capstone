@@ -1,6 +1,4 @@
-# CLaP
-Code for our NAACL-2024 paper "Contextual Label Projection for Cross-Lingual Structured Prediction"
---
+I am leveraging the [CLaP README](https://github.com/PlusLabNLP/CLaP/tree/main) as this work utilizes that process.
 
 ## Setup
 
