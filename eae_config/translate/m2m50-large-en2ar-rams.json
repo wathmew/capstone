@@ -4,11 +4,12 @@
     "tgt_lang": "ar",
     "task": "eae",
     "xgear_config": "./eae_config/xgear/config_XGear_EAE_rams_en_mBART50.jsonnet",
-    "split": "train",
+    "split": "test",
     
     "model_name": "facebook/mbart-large-50-many-to-many-mmt",
-    "batch_size": 8,
+    "batch_size": 32,
     "max_length": 350,
+    "fp16": true,
     
     "save_orig_translations": true,
     "load_orig_translations": false,
