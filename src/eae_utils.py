@@ -276,7 +276,10 @@ def create_data_and_save_eae(src_data, trans_data, config):
             expected_role = src_roles[entity_idx]
             if expected_role != "Trigger":
                 print(f"[WARN] Skipping event in doc {dt['doc_id']}: expected 'Trigger', got '{expected_role}' at index {entity_idx}")
-                entity_idx += src_num_entities[i][j]
+                #entity_idx += src_num_entities[i][j]
+                entity_idx += 1 # consume this trigger entity 
+                for _ in em["arguments"]: # skip arguments one by one
+                    entity_idx += 1
                 continue
             entity_trans = trans_entities[entity_idx]
             if not char_lang and trans_entities[entity_idx] in trans_text[i]:
@@ -291,15 +294,25 @@ def create_data_and_save_eae(src_data, trans_data, config):
             #elif trans_entities[entity_idx] in trans_text[i]:
             #    import ipdb; ipdb.set_trace()
             else:
-                #print(f"[MISSING TRIGGER] doc_id={dt['doc_id']} lang={config.tgt_lang}")
-                #print(f"  Translated Text: {trans_text[i]}")
-                #print(f"  Trigger Span:    '{entity_trans}'")
-                entity_idx += src_num_entities[i][j]
+                print("=== MISSING TRIGGER ===")
+                print(f"  Original English Text:  {dt['text']!r}")
+                print(f"  Original English Label: {em['trigger'][3]!r}")  # or em['trigger'][2] if you mean type
+                print(f"  Translated Text:        {trans_text[i]!r}")
+                print(f"  Translated Label:       {entity_trans!r}")
+                print("========================")
+                
+                #entity_idx += src_num_entities[i][j]
+
+                entity_idx += 1
+                for _ in em["arguments"]:
+                    entity_idx += 1
                 continue
             
             if config.only_ed:
                 tgt_dt["event_mentions"].append(tgt_em)
-                entity_idx += src_num_entities[i][j] - 1
+                #entity_idx += src_num_entities[i][j] - 1
+                for _ in em["arguments"]:
+                    entity_idx += 1
                 continue
 
             for arg in em["arguments"]:
@@ -330,9 +343,12 @@ def create_data_and_save_eae(src_data, trans_data, config):
 
                     tgt_em["arguments"].append(arg)
                 else:
-                    #print(f"[MISSING ARG] doc_id={dt['doc_id']} lang={config.tgt_lang} event_id={em['id']}")
-                    #print(f"  Translated Text: {trans_text[i]}")
-                    #print(f"  Argument Span:   '{entity_trans}'")
+                    print("=== MISSING ARGUMENT ===")
+                    print(f"  Original English Text:  {dt['text']!r}")
+                    print(f"  Original English Label: {src_entities[entity_idx]['entitytext']!r}")  # or src_roles[entity_idx]
+                    print(f"  Translated Text:        {trans_text[i]!r}")
+                    print(f"  Translated Label:       {entity_trans!r}")
+                    print("========================")
                     args_in_text = 0
                 
                 entity_idx += 1
